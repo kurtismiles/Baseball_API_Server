@@ -11,7 +11,7 @@ app.use(cors());
 const routes = require('./routes/routes')(app, fs);
 
 //create server and listen on port 8081
-var server = app.listen(8081, function () {
+var server = app.listen(80, function () {
     var host = server.address().address
     var port = server.address().port
     console.log("Application listening at http://%s:%s", host, port)
