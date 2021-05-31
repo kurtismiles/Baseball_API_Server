@@ -14,8 +14,8 @@ const playerRoutes = (app, fs, connection) => {
                 console.log('Request received');
                 //validatePlayer here
                 con.connect(function (err) {
-                    con.query(`INSERT INTO players (name, city, height, weight, bats, throws) VALUES ('${req.body.name}', '${req.body.city}',
-                 '${req.body.height}', '${req.body.weight}', '${req.body.bats}', '${req.body.throws}')`, function (err, result, fields) {
+                    con.query(`INSERT INTO players (name, city, height, weight, bats, throws) VALUES (${con.escape(req.body.name)}, ${con.escape(req.body.city)},
+                 ${con.escape(req.body.height)}, ${con.escape(req.body.weight)}, ${con.escape(req.body.bats)}, ${con.escape(req.body.throws)})`, function (err, result, fields) {
                         if (err) res.send(err);
                         if (result) res.status(201).send({
                             name: req.body.name,
@@ -32,25 +32,29 @@ const playerRoutes = (app, fs, connection) => {
                 res.status(400).send("invalid request message framing");
                 console.log('Missing a parameter');
             }
-        } catch (exception) { res.sendStatus(400); console.log(exception) }
+        } catch (exception) {
+            res.sendStatus(400);
+            console.log(exception);
+        };
     });
 
+    //TO-DO
     //data validation for adding players to players table
     const validatePlayer = (name, city, height, weight, bats, throws) => {
-        if (
-            //check name
-            (name.typeof === "String" && name.length > 0 && name.length < 128)
-            //check city
-            //check height
-            //check weight
-            //check bats
-            //check throws
-        ) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        // if (
+        //     //check name
+        //     (name.typeof === "String" && name.length > 0 && name.length < 128)
+        //     //check city
+        //     //check height
+        //     //check weight
+        //     //check bats
+        //     //check throws
+        // ) {
+        //     return true;
+        // }
+        // else {
+        //     return false;
+        // }
     };
 
     //====================
@@ -75,7 +79,7 @@ const playerRoutes = (app, fs, connection) => {
         console.log(req);
         try {
             con.connect(function (err) {
-                con.query(`SELECT * FROM players WHERE players.name = ('${req.params.playerName}')`, function (err, result, fields) {
+                con.query(`SELECT * FROM players WHERE players.name = (${con.escape(req.params.playerName)})`, function (err, result, fields) {
                     if (err) res.send(err);
                     if (result) res.status(200).send(result);
                     if (fields) console.log(fields);
@@ -95,7 +99,8 @@ const playerRoutes = (app, fs, connection) => {
         try {
             if (req.body.name && req.body.city && req.body.height && req.body.weight && req.body.bats && req.body.throws) {
                 con.connect(function (err) {
-                    con.query(`UPDATE players SET name='${req.body.name}', city='${req.body.city}', height='${req.body.height}', weight='${req.body.weight}', bats='${req.body.bats}', throws='${req.body.throws}' WHERE name='${req.params.playerName}'`,
+                    con.query(`UPDATE players SET name=${con.escape(req.body.name)}, city=${con.escape(req.body.city)},
+                     height=${con.escape(req.body.height)}, weight=${con.escape(req.body.weight)}, bats=${con.escape(req.body.bats)}, throws=${con.escape(req.body.throws)} WHERE name=${con.escape(req.params.playerName)}`,
                         function (err, result, fields) {
                             if (err) res.send(err);
                             if (result) res.status(200).send(result);
@@ -119,7 +124,7 @@ const playerRoutes = (app, fs, connection) => {
         console.log(req);
         try {
             con.connect(function (err) {
-                con.query(`DELETE FROM players WHERE name='${req.params.playerName}' LIMIT 1`, function (err, result, fields) {
+                con.query(`DELETE FROM players WHERE name=${con.escape(req.params.playerName)} LIMIT 1`, function (err, result, fields) {
                     if (err) res.send(err);
                     if (result) res.status(200).send(result);
                     if (fields) console.log(fields);
